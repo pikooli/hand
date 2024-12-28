@@ -2,8 +2,8 @@ import { FilesetResolver, HandLandmarker } from '@mediapipe/tasks-vision';
 
 let handLandmarker: HandLandmarker;
 
-// const runningMode = 'VIDEO';
-const runningMode = 'IMAGE';
+const runningMode = 'VIDEO';
+// const runningMode = 'IMAGE';
 
 (async () => {
   console.log('loading handLandmarker');
@@ -20,35 +20,19 @@ const runningMode = 'IMAGE';
     numHands: 2,
   });
   console.log('handLandmarker loaded', handLandmarker);
-  self.postMessage({ type: 'status', status: 'ready' });
+  self.postMessage({ type: 'status', results: 'ready' });
 })();
 
 self.onmessage = async (event) => {
-  console.log('Message received from main thread:', event.data);
   if (!handLandmarker) return;
   
   const { type, imageData, width, height, timestamp } = event.data;
   if (type === 'detect') {
     const image = new ImageData(new Uint8ClampedArray(imageData), width, height);
 
-    const results = handLandmarker.detect(image);
+    const results = handLandmarker.detectForVideo(image, timestamp);
 
     postMessage({ type: 'results', results, timestamp });
   }
 };
 
-// self.addEventListener('message', async (event) => {
-//     console.log(event);
-//   while (!classifier) {
-//     await new Promise((resolve) => setTimeout(resolve, 50));
-//   }
-
-//   const { image } = event.data;
-//   const data = new Uint8ClampedArray(image.data.length / 4);
-//   for (let i = 0; i < data.length; ++i) {
-//     data[i] = image.data[i * 4 + 3];
-//   }
-//   const img = new RawImage(data, image.width, image.height, 1);
-//   const result = await handle(img);
-//   self.postMessage({ type: "result" });
-// });
