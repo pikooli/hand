@@ -2,12 +2,11 @@
 import { useRef, useEffect } from 'react';
 import { MediapipeModel } from './mediapipe/mediapipe';
 
-
 export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mediapipeModel = useRef<MediapipeModel | null>(null);
-  
+
   useEffect(() => {
     if (canvasRef.current && videoRef.current) {
       // @ts-expect-error canvasRef and videoRef are can be null
@@ -17,7 +16,6 @@ export default function Home() {
       mediapipeModel.current?.destroy();
     };
   }, []);
-
 
   const getUserMedia = async () => {
     try {
