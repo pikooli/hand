@@ -208,6 +208,7 @@ export class MediapipeModel {
     this.drawLandmark(landmarks);
     this.drawLandmarkName(landmarks);
     this.drawConnectors(landmarks);
+    this.drawBoundingBox(landmarks);
   };
 
   drawLandmarkName = (landmarks: NormalizedLandmark[]) => {
@@ -328,6 +329,24 @@ export class MediapipeModel {
       );
     }
     window.requestAnimationFrame(this.detectForVideo);
+  };
+
+  drawBoundingBox = (landmarks: NormalizedLandmark[]) => {
+    if (!landmarks || !this.canvasCtx) return;
+
+    const xCoordinates = landmarks.map((lm) => lm.x * this.canvasWidth);
+    const yCoordinates = landmarks.map((lm) => lm.y * this.canvasHeight);
+
+    const minX = Math.min(...xCoordinates);
+    const maxX = Math.max(...xCoordinates);
+    const minY = Math.min(...yCoordinates);
+    const maxY = Math.max(...yCoordinates);
+
+    this.canvasCtx.save();
+    this.canvasCtx.strokeStyle = 'blue';
+    this.canvasCtx.lineWidth = 2;
+    this.canvasCtx.strokeRect(minX, minY, maxX - minX, maxY - minY);
+    this.canvasCtx.restore();
   };
 
   destroy = () => {
