@@ -1,5 +1,6 @@
 import { FilesetResolver, HandLandmarker } from '@mediapipe/tasks-vision';
 import { MESSAGE_TYPE } from './constant';
+
 let handLandmarker: HandLandmarker;
 
 const runningMode = 'VIDEO';

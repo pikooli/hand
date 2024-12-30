@@ -33,9 +33,3 @@ export const LANDMARK_LEVELS = [
 
 export const COLOR_CONNECTOR = '#00FF00';
 export const LINE_CONNECTOR_WIDTH = 1;
-
-export const MESSAGE_TYPE = {
-  DETECT: 'detect',
-  RESULTS: 'results',
-  STATUS: 'status',
-} as const;

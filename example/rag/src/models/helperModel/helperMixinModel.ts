@@ -1,4 +1,8 @@
-import { HandLandmarker, NormalizedLandmark } from '@mediapipe/tasks-vision';
+import {
+  HandLandmarker,
+  NormalizedLandmark,
+  HandLandmarkerResult,
+} from '@mediapipe/tasks-vision';
 
 import {
   LEVEL_COLORS,
@@ -9,23 +13,57 @@ import {
 
 export class HelperMixinModel {
   canvasRef: React.RefObject<HTMLCanvasElement>;
-  videoRef: React.RefObject<HTMLVideoElement>;
   canvasCtx: CanvasRenderingContext2D | null = null;
   canvasWidth = 0;
   canvasHeight = 0;
+  shouldDrawBoundingBox = true;
+  shouldDrawLandmarkHelper = true;
 
-  constructor(canvasRef: React.RefObject<HTMLCanvasElement>, videoRef: React.RefObject<HTMLVideoElement>) {
+  constructor(
+    canvasRef: React.RefObject<HTMLCanvasElement>,
+    canvasWidth: number,
+    canvasHeight: number
+  ) {
     this.canvasRef = canvasRef;
-    this.videoRef = videoRef;
-    this.canvasCtx = canvasRef.current?.getContext('2d');
-    this.canvasWidth = canvasRef.current?.width || 0;
-    this.canvasHeight = canvasRef.current?.height || 0;
+    this.canvasWidth = canvasWidth;
+    this.canvasHeight = canvasHeight;
+    this.resizeCanvas(canvasWidth, canvasHeight);
   }
-  setCanvasSize(width: number, height: number) {
+
+  drawElements = async (results: HandLandmarkerResult) => {
+    if (!this.canvasRef.current || !this.canvasCtx) {
+      return;
+    }
+    this.canvasCtx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    for (const landmarks of results.landmarks) {
+      this.drawLandmarkHelper(landmarks);
+      this.drawBoundingBox(landmarks);
+    }
+  };
+
+  resizeCanvas = (width: number, height: number) => {
     this.canvasWidth = width;
     this.canvasHeight = height;
+    this.canvasRef.current.style.setProperty('width', `${this.canvasWidth}px`);
+    this.canvasRef.current.style.setProperty(
+      'height',
+      `${this.canvasHeight}px`
+    );
+    this.canvasRef.current.width = this.canvasWidth;
+    this.canvasRef.current.height = this.canvasHeight;
+
+    this.canvasCtx = this.canvasRef.current.getContext('2d');
+  };
+
+  setShouldDrawBoundingBox(shouldDraw: boolean = true) {
+    this.shouldDrawBoundingBox = shouldDraw;
   }
+  setShouldDrawLandmarkHelper(shouldDraw: boolean = true) {
+    this.shouldDrawLandmarkHelper = shouldDraw;
+  }
+
   drawLandmarkHelper(landmarks: NormalizedLandmark[]) {
+    if (!this.shouldDrawLandmarkHelper) return;
     this.drawLandmark(landmarks);
     this.drawLandmarkName(landmarks);
     this.drawConnectors(landmarks);
@@ -46,7 +84,7 @@ export class HelperMixinModel {
 
       this.canvasCtx!.fillText(
         index.toString(),
-        x + 5, // Offset text slightly from point
+        x + 5, 
         y + 5
       );
     });
@@ -112,7 +150,7 @@ export class HelperMixinModel {
   }
 
   drawBoundingBox(landmarks: NormalizedLandmark[]) {
-    if (!landmarks || !this.canvasCtx) return;
+    if (!landmarks || !this.canvasCtx || !this.shouldDrawBoundingBox) return;
 
     const xCoordinates = landmarks.map((lm) => lm.x * this.canvasWidth);
     const yCoordinates = landmarks.map((lm) => lm.y * this.canvasHeight);
