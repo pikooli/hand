@@ -1,72 +1,44 @@
 'use client';
 import { useRef, useEffect, useState } from 'react';
-import GUI from 'lil-gui';
 import { HelperModel } from '@/src/models/helperModel/helperModel';
 import { ImageModel } from '@/src/models/imageModel';
 import { HandLandmarkerResult } from '@mediapipe/tasks-vision';
 import { VideoMediapipe } from '@/components/videoMediapipe/VideoMediapipe';
 import { MediapipeModel } from '@/src/models/videoMediapipe/mediapipe';
-
-const guiObject = {
-  showHelper: true,
-  positionDirt: {
-    x: 0,
-    y: 0,
-    z: 0,
-  }
-};
+import { HelperComponent } from '@/components/HelperComponent';
+import { GameComponent } from '@/components/GameComponent';
+import { useGuiDisplay, guiObject } from '@/components/useGuiDisplay';
 
 export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const canvasHelperRef = useRef<HTMLCanvasElement>(null);
-  const helperMixinModel = useRef<HelperModel>(null);
-  const imageModel = useRef<ImageModel>(null);
+  const helperRef = useRef<HelperModel>(null);
+  const imageRef = useRef<ImageModel>(null);
   const [landmarks, setLandmarks] = useState<HandLandmarkerResult | null>(null);
   const mediapipeRef = useRef<MediapipeModel>(null);
   const guiRef = useRef(guiObject);
+  
+  useGuiDisplay({ guiRef });
 
   useEffect(() => {
-    const gui = new GUI();
-    gui.add(guiRef.current, 'showHelper');
-    gui.add(guiRef.current.positionDirt, 'x', 0, 1);
-    gui.add(guiRef.current.positionDirt, 'y', 0, 1);
-    gui.add(guiRef.current.positionDirt, 'z', 0, 1);
-    return () => {
-      gui.destroy();
-    };
-  }, []);
-
-  useEffect(() => {
-    imageModel.current?.cleanCanvas();
+    imageRef.current?.cleanCanvas();
     if (landmarks?.landmarks) {
       if (guiRef.current.showHelper) {
-        helperMixinModel.current?.drawElements(landmarks);
+        helperRef.current?.drawElements(landmarks);
       }
-      // imageModel.current?.drawRag(landmarks.landmarks[0]);
+      imageRef.current?.drawRag(landmarks.landmarks[0]);
       
     }
-    // imageModel.current?.drawDirt(
-    //   guiRef.current.positionDirt
-    // );
+    imageRef.current?.drawDirt(
+      guiRef.current.positionDirt
+    );
     
   }, [landmarks]);
 
   const getUserMedia = async () => {
     try {
       mediapipeRef.current?.initUserMedia(() => {
-        helperMixinModel.current = new HelperModel(
-          // @ts-expect-error canvasRef and videoRef are can be null
-          canvasHelperRef,
-          videoRef.current?.offsetWidth || 0,
-          videoRef.current?.offsetHeight || 0
-        );
-        imageModel.current = new ImageModel(
-          // @ts-expect-error canvasRef and videoRef are can be null
-          canvasRef,
-          videoRef.current?.offsetWidth || 0,
-          videoRef.current?.offsetHeight || 0
-        );
+        helperRef.current?.resizeCanvas(videoRef.current?.offsetWidth || 0, videoRef.current?.offsetHeight || 0);
+        imageRef.current?.resizeCanvas(videoRef.current?.offsetWidth || 0, videoRef.current?.offsetHeight || 0);
       });
       mediapipeRef.current?.onMessage(setLandmarks);
     } catch (err) {
@@ -79,14 +51,8 @@ export default function Home() {
       <button onClick={getUserMedia}>Get User Media</button>
       <div className="relative transform -scale-x-100">
         <VideoMediapipe mediapipeRef={mediapipeRef} videoRef={videoRef}/>
-        <canvas
-          className="border border-blue-500 absolute top-0 left-0 z-10"
-          ref={canvasHelperRef}
-        />
-        <canvas
-          className="border border-green-500 absolute top-0 left-0 z-10"
-          ref={canvasRef}
-        />
+        <HelperComponent helperRef={helperRef}/>
+        <GameComponent imageRef={imageRef}/>
       </div>
     </div>
   );
