@@ -6,7 +6,6 @@ import { ImageModel } from '@/src/models/imageModel';
 import { HandLandmarkerResult } from '@mediapipe/tasks-vision';
 import { VideoMediapipe } from '@/components/videoMediapipe/VideoMediapipe';
 import { MediapipeModel } from '@/src/models/videoMediapipe/mediapipe';
-import { RockPaperScissors } from '@/components/RockPaperScissors';
 
 const guiObject = {
   showHelper: true,
@@ -59,14 +58,14 @@ export default function Home() {
         helperMixinModel.current = new HelperModel(
           // @ts-expect-error canvasRef and videoRef are can be null
           canvasHelperRef,
-          videoRef.current?.videoWidth || 0,
-          videoRef.current?.videoHeight || 0
+          videoRef.current?.offsetWidth || 0,
+          videoRef.current?.offsetHeight || 0
         );
         imageModel.current = new ImageModel(
           // @ts-expect-error canvasRef and videoRef are can be null
           canvasRef,
-          videoRef.current?.videoWidth || 0,
-          videoRef.current?.videoHeight || 0
+          videoRef.current?.offsetWidth || 0,
+          videoRef.current?.offsetHeight || 0
         );
       });
       mediapipeRef.current?.onMessage(setLandmarks);
@@ -77,7 +76,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <RockPaperScissors landmarks={landmarks} />
       <button onClick={getUserMedia}>Get User Media</button>
       <div className="relative transform -scale-x-100">
         <VideoMediapipe mediapipeRef={mediapipeRef} videoRef={videoRef}/>
