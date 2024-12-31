@@ -1,7 +1,7 @@
 'use client';
 import { useRef, useEffect, useState } from 'react';
 import GUI from 'lil-gui';
-import { HelperMixinModel } from '@/src/models/helperModel/helperMixinModel';
+import { HelperModel } from '@/src/models/helperModel/helperModel';
 import { ImageModel } from '@/src/models/imageModel';
 import { HandLandmarkerResult } from '@mediapipe/tasks-vision';
 import { VideoMediapipe } from '@/components/videoMediapipe/VideoMediapipe';
@@ -20,7 +20,7 @@ export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasHelperRef = useRef<HTMLCanvasElement>(null);
-  const helperMixinModel = useRef<HelperMixinModel>(null);
+  const helperMixinModel = useRef<HelperModel>(null);
   const imageModel = useRef<ImageModel>(null);
   const [landmarks, setLandmarks] = useState<HandLandmarkerResult | null>(null);
   const mediapipeRef = useRef<MediapipeModel>(null);
@@ -43,7 +43,7 @@ export default function Home() {
       if (guiRef.current.showHelper) {
         helperMixinModel.current?.drawElements(landmarks);
       }
-      imageModel.current?.drawRag(landmarks.landmarks[0]);
+      // imageModel.current?.drawRag(landmarks.landmarks[0]);
     }
     imageModel.current?.drawDirt(
       guiRef.current.positionDirt
@@ -53,7 +53,7 @@ export default function Home() {
   const getUserMedia = async () => {
     try {
       mediapipeRef.current?.initUserMedia(() => {
-        helperMixinModel.current = new HelperMixinModel(
+        helperMixinModel.current = new HelperModel(
           // @ts-expect-error canvasRef and videoRef are can be null
           canvasHelperRef,
           videoRef.current?.videoWidth || 0,

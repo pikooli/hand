@@ -2,6 +2,7 @@ import {
   HandLandmarker,
   NormalizedLandmark,
   HandLandmarkerResult,
+  Category,
 } from '@mediapipe/tasks-vision';
 
 import {
@@ -11,7 +12,7 @@ import {
   LINE_CONNECTOR_WIDTH,
 } from './constant';
 
-export class HelperMixinModel {
+export class HelperModel {
   canvasRef: React.RefObject<HTMLCanvasElement>;
   canvasCtx: CanvasRenderingContext2D | null = null;
   canvasWidth = 0;
@@ -35,10 +36,11 @@ export class HelperMixinModel {
       return;
     }
     this.canvasCtx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-    for (const landmarks of results.landmarks) {
+    results.landmarks.forEach((landmarks) => {
       this.drawLandmarkHelper(landmarks);
       this.drawBoundingBox(landmarks);
-    }
+    });
+    this.drawHandsName(results.landmarks, results.handedness);
   };
 
   resizeCanvas = (width: number, height: number) => {
@@ -82,13 +84,33 @@ export class HelperMixinModel {
       const x = this.canvasWidth - landmark.x * this.canvasWidth;
       const y = landmark.y * this.canvasHeight;
 
-      this.canvasCtx!.fillText(
-        index.toString(),
-        x + 5, 
-        y + 5
-      );
+      this.canvasCtx!.fillText(index.toString(), x + 5, y + 5);
     });
 
+    this.canvasCtx.restore();
+  }
+
+  drawHandsName(landmarks: NormalizedLandmark[][], handedness: Category[][]) {
+    if (!this.canvasCtx || !handedness.length || !landmarks.length) return;
+
+    this.canvasCtx.save();
+    this.canvasCtx.scale(-1, 1);
+    this.canvasCtx.translate(-this.canvasWidth, 0);
+    this.canvasCtx.fillStyle = '#000000';
+    this.canvasCtx.font = '12px Arial';
+
+    handedness.forEach((hands) => {
+      hands.forEach((hand) => {
+        if (!landmarks[hand.index]) return;
+        const x =
+          this.canvasWidth - landmarks[hand.index][0].x * this.canvasWidth;
+        const y = landmarks[hand.index][0].y * this.canvasHeight;
+        
+        if (!hand.displayName) return;
+        const name = hand.displayName === "Left" ? "Right" : "Left";
+        this.canvasCtx!.fillText(name, x + 5, y + 5);
+      });
+    });
     this.canvasCtx.restore();
   }
 
