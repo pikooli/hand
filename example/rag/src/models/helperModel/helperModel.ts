@@ -29,6 +29,7 @@ export class HelperModel {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
     this.resizeCanvas(canvasWidth, canvasHeight);
+    console.log('====== helperModel loaded');
   }
 
   drawElements = async (results: HandLandmarkerResult) => {
@@ -37,8 +38,9 @@ export class HelperModel {
     }
     this.canvasCtx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     results.landmarks.forEach((landmarks) => {
-      this.drawLandmarkHelper(landmarks);
-      this.drawBoundingBox(landmarks);
+      // this.drawLandmarkHelper(landmarks);
+      // this.drawBoundingBox(landmarks);
+      this.drawLandmarkCoordonate(landmarks, results.worldLandmarks[0]);
     });
     this.drawHandsName(results.landmarks, results.handedness);
   };
@@ -85,6 +87,31 @@ export class HelperModel {
       const y = landmark.y * this.canvasHeight;
 
       this.canvasCtx!.fillText(index.toString(), x + 5, y + 5);
+    });
+
+    this.canvasCtx.restore();
+  }
+
+  drawLandmarkCoordonate(landmarks: NormalizedLandmark[], worldLandmarks: NormalizedLandmark[]) {
+    if (!this.canvasCtx) return;
+    this.canvasCtx.save();
+    this.canvasCtx.scale(-1, 1);
+    this.canvasCtx.translate(-this.canvasWidth, 0);
+    this.canvasCtx.fillStyle = '#000000';
+    this.canvasCtx.font = '12px Arial';
+
+    landmarks.forEach((landmark, index) => {
+      // if ([4, 8, 12, 16, 20].includes(index)) {
+        const x = this.canvasWidth - landmark.x * this.canvasWidth;
+        const y = landmark.y * this.canvasHeight;
+        
+        this.canvasCtx!.fillStyle = "white";
+        this.canvasCtx!.fillRect(x + 4, y + 4, 100, 30);
+        this.canvasCtx!.fillStyle = "black";
+        this.canvasCtx!.fillText(`x=${worldLandmarks[index].x}`, x + 5, y + 5);
+        this.canvasCtx!.fillText(`y=${worldLandmarks[index].y}`, x + 5, y + 15);
+        this.canvasCtx!.fillText(`z=${worldLandmarks[index].z}`, x + 5, y + 25);
+      // }
     });
 
     this.canvasCtx.restore();
