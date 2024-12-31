@@ -6,6 +6,7 @@ import { ImageModel } from '@/src/models/imageModel';
 import { HandLandmarkerResult } from '@mediapipe/tasks-vision';
 import { VideoMediapipe } from '@/components/videoMediapipe/VideoMediapipe';
 import { MediapipeModel } from '@/src/models/videoMediapipe/mediapipe';
+import { RockPaperScissors } from '@/components/RockPaperScissors';
 
 const guiObject = {
   showHelper: true,
@@ -44,10 +45,12 @@ export default function Home() {
         helperMixinModel.current?.drawElements(landmarks);
       }
       // imageModel.current?.drawRag(landmarks.landmarks[0]);
+      
     }
-    imageModel.current?.drawDirt(
-      guiRef.current.positionDirt
-    );
+    // imageModel.current?.drawDirt(
+    //   guiRef.current.positionDirt
+    // );
+    
   }, [landmarks]);
 
   const getUserMedia = async () => {
@@ -73,7 +76,8 @@ export default function Home() {
   };
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex flex-col items-center justify-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <RockPaperScissors landmarks={landmarks} />
       <button onClick={getUserMedia}>Get User Media</button>
       <div className="relative transform -scale-x-100">
         <VideoMediapipe mediapipeRef={mediapipeRef} videoRef={videoRef}/>

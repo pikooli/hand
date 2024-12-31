@@ -13,6 +13,7 @@ export class MediapipeModel {
     this.worker = new Worker(new URL('./workerMediapipe.ts', import.meta.url), {
       type: 'module',
     });
+    console.log('====== mediapipeModel loaded');
   }
 
   onMessage = (updateResults: (results: HandLandmarkerResult) => void) =>{
@@ -40,6 +41,7 @@ export class MediapipeModel {
         this.videoRef.current.addEventListener('loadeddata', () => {
           this.detectForVideo();
           callback?.();
+          console.log('====== initUserMedia');
         });
       }
     } catch (err) {

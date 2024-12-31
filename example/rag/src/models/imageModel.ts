@@ -12,11 +12,6 @@ export class ImageModel {
   dirtImage: HTMLImageElement;
   canvasWidth: number;
   canvasHeight: number;
-  dirtPositions = [
-    { x: Math.random(), y: Math.random() },
-    { x: Math.random(), y: Math.random() },
-    { x: Math.random(), y: Math.random() },
-  ];
 
   constructor(canvasRef: React.RefObject<HTMLCanvasElement>, canvasWidth: number, canvasHeight: number) {
     this.canvasRef = canvasRef;
@@ -34,6 +29,7 @@ export class ImageModel {
       console.log('Dirt image loaded');
     };
     this.resizeCanvas(canvasWidth, canvasHeight);
+    console.log('====== imageModel loaded');
   }
 
   resizeCanvas = (width: number, height: number) => {
@@ -69,10 +65,5 @@ export class ImageModel {
     const x = position.x * this.canvasWidth -position.x * DIRT_SIZE;
     const y = position.y * this.canvasHeight -position.y * DIRT_SIZE;
     this.canvasCtx.drawImage(this.dirtImage, x, y, DIRT_SIZE, DIRT_SIZE);
-    // this.dirtPositions.forEach((position) => {
-    //   const x = position.x * this.canvasWidth - DIRT_SIZE / 2;
-    //   const y = position.y * this.canvasHeight - DIRT_SIZE / 2;
-    //   this.canvasCtx.drawImage(this.dirtImage, x, y, DIRT_SIZE, DIRT_SIZE);
-    // });
   };
 }

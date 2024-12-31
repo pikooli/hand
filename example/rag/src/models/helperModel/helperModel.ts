@@ -38,9 +38,9 @@ export class HelperModel {
     }
     this.canvasCtx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     results.landmarks.forEach((landmarks) => {
-      // this.drawLandmarkHelper(landmarks);
-      // this.drawBoundingBox(landmarks);
-      this.drawLandmarkCoordonate(landmarks, results.worldLandmarks[0]);
+      this.drawLandmarkHelper(landmarks);
+      this.drawBoundingBox(landmarks);
+      // this.drawLandmarkCoordonate(landmarks, results.worldLandmarks[0]);
     });
     this.drawHandsName(results.landmarks, results.handedness);
   };
