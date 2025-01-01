@@ -76,7 +76,7 @@ export const GameComponent = ({
         imageRef.current?.drawRag(landmarks.landmarks[0]);
         dirtPositions.forEach((position, index) => {
           if (
-            imageRef.current?.isRagOverDirt(landmarks?.landmarks[0], position)
+            imageRef.current?.isRagOverDirt(position)
           ) {
             setDirtPositions((prev) => {
               return [...prev.slice(0, index), ...prev.slice(index + 1)];
