@@ -1,9 +1,8 @@
 import { NormalizedLandmark } from '@mediapipe/tasks-vision';
 
-const RAG_SIZE = 300;
 const DIRT_SIZE = 100;
-const IMAGERAG = '/rag.png';
-const IMAGEDIRT = '/dirt.png';
+const IMAGERAG = '/images/rag.png';
+const IMAGEDIRT = '/images/dirt.webp';
 
 export class ImageModel {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -53,17 +52,49 @@ export class ImageModel {
 
   drawRag = (landmarks: NormalizedLandmark[]) => {
     if (!landmarks || !this.canvasCtx) return;
+    
+    const xCoordinates = landmarks.map((lm) => lm.x * this.canvasWidth);
+    const yCoordinates = landmarks.map((lm) => lm.y * this.canvasHeight);
+    const minX = Math.min(...xCoordinates);
+    const maxX = Math.max(...xCoordinates);
+    const minY = Math.min(...yCoordinates);
+    const maxY = Math.max(...yCoordinates);
+    const ragSize = Math.max(maxX - minX, maxY - minY);
     const x =
-      ((landmarks[9].x + landmarks[0].x) / 2) * this.canvasWidth - RAG_SIZE / 2;
+      landmarks[9].x * this.canvasWidth - ragSize / 2;
     const y =
-      ((landmarks[9].y + landmarks[0].y) / 2) * this.canvasHeight - RAG_SIZE / 2;
-    this.canvasCtx.drawImage(this.ragImage, x, y, RAG_SIZE, RAG_SIZE);
+      landmarks[9].y * this.canvasHeight - ragSize / 2;
+    this.canvasCtx.drawImage(this.ragImage, x, y, ragSize, ragSize);
+    // this.canvasCtx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    // this.canvasCtx.fillRect(x, y, ragSize, ragSize);
     };
 
   drawDirt = (position: { x: number; y: number }) => {
-    if (!this.canvasCtx) return;
+    if (!this.canvasCtx || !position) return;
     const x = position.x * this.canvasWidth -position.x * DIRT_SIZE;
     const y = position.y * this.canvasHeight -position.y * DIRT_SIZE;
     this.canvasCtx.drawImage(this.dirtImage, x, y, DIRT_SIZE, DIRT_SIZE);
+    // this.canvasCtx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    // this.canvasCtx.fillRect(x, y, DIRT_SIZE, DIRT_SIZE);
+  };
+
+  isRagOverDirt = (landmarks: NormalizedLandmark[], dirtPosition: { x: number; y: number }): boolean => {
+    if (!landmarks) return false;
+
+    // Calculate rag position (center point)
+    const ragCenterX = landmarks[9].x * this.canvasWidth;
+    const ragCenterY = landmarks[9].y * this.canvasHeight;
+
+    // Calculate dirt position
+    const dirtX = dirtPosition.x * this.canvasWidth - dirtPosition.x * DIRT_SIZE;
+    const dirtY = dirtPosition.y * this.canvasHeight - dirtPosition.y * DIRT_SIZE;
+
+    // Check if dirt center point is within rag boundaries
+    return (
+      ragCenterX >= dirtX &&
+      ragCenterX <= dirtX + DIRT_SIZE &&
+      ragCenterY >= dirtY &&
+      ragCenterY <= dirtY + DIRT_SIZE
+    );
   };
 }

@@ -61,7 +61,7 @@ export const detectRockGesture = (landmarks: HandLandmarkerResult) => {
     const palmCenter = worldLandmarks[0];
   
     const fingertips = [4, 8, 12, 16, 20];
-    const FIST_THRESHOLD = 0.1;
+    const FIST_THRESHOLD = 0.11;
     return fingertips.every((index) => {
       const fingertip = worldLandmarks[index];
   

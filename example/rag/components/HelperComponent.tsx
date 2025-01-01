@@ -1,21 +1,33 @@
 import { useEffect, useRef } from 'react';
 import { HelperModel } from '@/src/models/helperModel/helperModel';
+import { HandLandmarkerResult } from '@mediapipe/tasks-vision';
 
 interface HelperComponentProps {
-  helperRef: React.RefObject<HelperModel| null>;
+  helperRef: React.RefObject<HelperModel | null>;
+  landmarks: HandLandmarkerResult | null;
+  showHelper: boolean;
 }
 
-export const HelperComponent = ({ helperRef }: HelperComponentProps) => {
+export const HelperComponent = ({
+  helperRef,
+  landmarks,
+  showHelper,
+}: HelperComponentProps) => {
   const canvasHelperRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     helperRef.current = new HelperModel(
-        // @ts-expect-error canvasRef and videoRef are can be null
+      // @ts-expect-error canvasRef and videoRef are can be null
       canvasHelperRef,
       canvasHelperRef?.current?.width || 0,
       canvasHelperRef?.current?.height || 0
     );
   }, [helperRef]);
+  useEffect(() => {
+    if (landmarks?.landmarks && showHelper) {
+      helperRef.current?.drawElements(landmarks);
+    }
+  }, [landmarks, helperRef, showHelper]);
 
   return (
     <canvas

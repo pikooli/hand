@@ -5,6 +5,7 @@ export class MediapipeModel {
   videoRef: React.RefObject<HTMLVideoElement>;
   worker: Worker;
   lastVideoTimeRef = 0;
+  isInitialized = false;
 
   constructor(
     videoRef: React.RefObject<HTMLVideoElement>,
@@ -30,6 +31,9 @@ export class MediapipeModel {
 
   initUserMedia = async (callback?: () => void) => {
     try {
+      if (this.isInitialized) {
+        return;
+      }
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'user',
@@ -44,6 +48,7 @@ export class MediapipeModel {
           console.log('====== initUserMedia');
         });
       }
+      this.isInitialized = true;
     } catch (err) {
       console.error('Error accessing webcam:', err);
     }
