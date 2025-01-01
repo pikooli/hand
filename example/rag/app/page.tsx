@@ -18,6 +18,7 @@ export default function Home() {
   const [landmarks, setLandmarks] = useState<HandLandmarkerResult | null>(null);
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [score, setScore] = useState(0);
+  const [level, setLevel] = useState(0);
   const mediapipeRef = useRef<MediapipeModel>(null);
   const guiRef = useRef(guiObject);
   const musicRef = useRef<HTMLAudioElement>(null);
@@ -47,12 +48,12 @@ export default function Home() {
     <div className="flex flex-col items-center justify-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <div className="flex gap-4">
       <button className="bg-blue-500 text-white px-4 py-2 rounded-md" onClick={getUserMedia}>Get User Media</button>
-      <p className="text-2xl font-bold">Score: {score}</p>
+      <p className="text-2xl font-bold">Score: {score} Level: {level}</p>
       </div>
       <div className="relative transform -scale-x-100">
         <VideoMediapipe mediapipeRef={mediapipeRef} videoRef={videoRef}/>
         <HelperComponent helperRef={helperRef} landmarks={landmarks} showHelper={guiRef.current.showHelper}/>
-        <GameComponent imageRef={imageRef} landmarks={landmarks} isGameStarted={isGameStarted} score={score} setScore={setScore}/>
+        <GameComponent imageRef={imageRef} landmarks={landmarks} isGameStarted={isGameStarted} score={score} setScore={setScore} level={level} setLevel={setLevel}/>
       </div>
       <audio src={MUSIC_BACKGROUND} ref={musicRef} loop/>
     </div>

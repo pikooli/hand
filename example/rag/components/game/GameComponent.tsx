@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { HandLandmarkerResult } from '@mediapipe/tasks-vision';
 import { ImageModel } from '@/src/models/imageModel';
 import { detectPaperGesture } from '@/src/gesture/rockPaperScissors';
+import { LEVEL_CONFIG } from './constants';
+
+const SOUND_WIPE = '/sounds/wipe.mp3';
+const AUDIO_VOLUME = 0.9;
 
 const createRandomPosition = () => {
   return { x: Math.random(), y: Math.random() };
@@ -9,14 +13,10 @@ const createRandomPosition = () => {
 
 const playSound = (sound: string) => {
   const audio = new Audio(sound);
-  audio.volume = 0.9;
+  audio.volume = AUDIO_VOLUME;
   audio.play();
 };
 
-
-const SOUND_WIPE = '/sounds/wipe.mp3';
-const MAX_DIRT = 6;
-const DEFAULT_SPEED = 1000;
 interface Position {
   x: number;
   y: number;
@@ -27,7 +27,9 @@ interface GameComponentProps {
   landmarks: HandLandmarkerResult | null;
   isGameStarted: boolean;
   score: number;
+  level: number;
   setScore: React.Dispatch<React.SetStateAction<number>>;
+  setLevel: React.Dispatch<React.SetStateAction<number>>;
 }
 export const GameComponent = ({
   imageRef,
@@ -35,10 +37,12 @@ export const GameComponent = ({
   isGameStarted,
   score,
   setScore,
+  level,
+  setLevel,
 }: GameComponentProps) => {
   const canvasGameRef = useRef<HTMLCanvasElement>(null);
   const [dirtPositions, setDirtPositions] = useState<Position[]>([]);
-  const [speed, setSpeed] = useState(DEFAULT_SPEED);
+  const [speed, setSpeed] = useState<number>(LEVEL_CONFIG[0].speed);
 
   useEffect(() => {
     imageRef.current = new ImageModel(
@@ -52,20 +56,21 @@ export const GameComponent = ({
   useEffect(() => {
     if (!isGameStarted) return;
     const interval = setInterval(() => {
-      if (dirtPositions.length < MAX_DIRT) {
+      if (dirtPositions.length < LEVEL_CONFIG[level].maxDirt) {
         setDirtPositions((prev) => {
           return [...prev, createRandomPosition()];
         });
       }
     }, speed);
     return () => clearInterval(interval);
-  }, [dirtPositions, isGameStarted, speed]);
+  }, [dirtPositions, isGameStarted, speed, level]);
 
   useEffect(() => {
-    if (score > 10 && speed === DEFAULT_SPEED) {
-      setSpeed(speed - 500);
+    if (score > LEVEL_CONFIG[level].score && level < LEVEL_CONFIG.length - 1) {
+      setLevel((prev) => prev + 1);
+      setSpeed(LEVEL_CONFIG[level + 1].speed);
     }
-  }, [score, speed]);
+  }, [score, level, setLevel]);
 
   useEffect(() => {
     if (!isGameStarted) return;
@@ -75,9 +80,7 @@ export const GameComponent = ({
       if (isPaperGesture) {
         imageRef.current?.drawRag(landmarks.landmarks[0]);
         dirtPositions.forEach((position, index) => {
-          if (
-            imageRef.current?.isRagOverDirt(position)
-          ) {
+          if (imageRef.current?.isRagOverDirt(position)) {
             setDirtPositions((prev) => {
               return [...prev.slice(0, index), ...prev.slice(index + 1)];
             });
