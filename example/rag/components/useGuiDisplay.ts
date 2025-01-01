@@ -1,3 +1,4 @@
+"use client";
 import GUI from 'lil-gui';
 import { useEffect } from 'react';
 
@@ -8,14 +9,18 @@ export const guiObject = {
 
 interface GuiProps {
   guiRef: React.RefObject<typeof guiObject>;
+  isDebug: boolean;
 }
-export const useGuiDisplay = ({ guiRef }: GuiProps) => {
+
+export const useGuiDisplay = ({ guiRef , isDebug}: GuiProps) => {
   useEffect(() => {
-    const gui = new GUI();
-    gui.add(guiRef.current, 'showHelper');
-    gui.add(guiRef.current, 'volume', 0, 1);
-    return () => {
-      gui.destroy();
-    };
-  }, [guiRef]);
+    if(isDebug) {
+      const gui = new GUI();
+      gui.add(guiRef.current, 'showHelper');
+      gui.add(guiRef.current, 'volume', 0, 1);
+      return () => {
+        gui.destroy();
+      };
+    }
+  }, [guiRef, isDebug]);
 };

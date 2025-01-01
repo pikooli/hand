@@ -97,7 +97,7 @@ export const GameComponent = ({
 
   return (
     <canvas
-      className="border border-blue-500 absolute top-0 left-0 z-10"
+      className="absolute top-0 left-0 z-10"
       ref={canvasGameRef}
     />
   );
