@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { HandLandmarkerResult } from '@mediapipe/tasks-vision';
 import { ImageModel } from '@/src/models/imageModel';
 import { detectPaperGesture } from '@/src/gesture/rockPaperScissors';
@@ -72,33 +72,38 @@ export const GameComponent = ({
     }
   }, [score, level, setLevel]);
 
+  const ragLogic = useCallback(
+    (landmarks: HandLandmarkerResult, index: number) => {
+      imageRef.current?.drawRag(landmarks.landmarks[index]);
+      dirtPositions.forEach((position, index) => {
+        if (imageRef.current?.isRagOverDirt(position)) {
+          setDirtPositions((prev) => {
+            return [...prev.slice(0, index), ...prev.slice(index + 1)];
+          });
+          playSound(SOUND_WIPE);
+          setScore((prev) => prev + 1);
+        }
+      });
+    },
+    [imageRef, dirtPositions, setScore]
+  );
+
   useEffect(() => {
     if (!isGameStarted) return;
     imageRef.current?.cleanCanvas();
     if (landmarks?.landmarks) {
-      const isPaperGesture = detectPaperGesture(landmarks);
-      if (isPaperGesture) {
-        imageRef.current?.drawRag(landmarks.landmarks[0]);
-        dirtPositions.forEach((position, index) => {
-          if (imageRef.current?.isRagOverDirt(position)) {
-            setDirtPositions((prev) => {
-              return [...prev.slice(0, index), ...prev.slice(index + 1)];
-            });
-            playSound(SOUND_WIPE);
-            setScore((prev) => prev + 1);
-          }
-        });
+      for (let i = 0; i < landmarks.landmarks.length; i++) {
+        const isPaperGesture = detectPaperGesture(landmarks.worldLandmarks[i]);
+        if (isPaperGesture) {
+          ragLogic(landmarks, i);
+          break;
+        }
       }
     }
     dirtPositions.forEach((position) => {
       imageRef.current?.drawDirt(position);
     });
-  }, [landmarks, imageRef, dirtPositions, isGameStarted, setScore]);
+  }, [landmarks, imageRef, dirtPositions, isGameStarted, ragLogic]);
 
-  return (
-    <canvas
-      className="absolute top-0 left-0 z-10"
-      ref={canvasGameRef}
-    />
-  );
+  return <canvas className="absolute top-0 left-0 z-10" ref={canvasGameRef} />;
 };

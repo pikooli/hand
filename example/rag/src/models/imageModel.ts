@@ -12,6 +12,7 @@ export class ImageModel {
   canvasWidth: number;
   canvasHeight: number;
   ragPosition: { x: number; y: number } | null = null;
+  dirtSize = DIRT_SIZE;
 
   constructor(
     canvasRef: React.RefObject<HTMLCanvasElement>,
@@ -48,6 +49,7 @@ export class ImageModel {
     this.canvasRef.current.height = this.canvasHeight;
 
     this.canvasCtx = this.canvasRef.current.getContext('2d');
+    this.dirtSize = Math.max(DIRT_SIZE, this.canvasHeight * 0.2);
   };
 
   cleanCanvas = () => {
@@ -95,9 +97,9 @@ export class ImageModel {
 
   drawDirt = (position: { x: number; y: number }) => {
     if (!this.canvasCtx || !position) return;
-    const x = position.x * this.canvasWidth - position.x * DIRT_SIZE;
-    const y = position.y * this.canvasHeight - position.y * DIRT_SIZE;
-    this.canvasCtx.drawImage(this.dirtImage, x, y, DIRT_SIZE, DIRT_SIZE);
+    const x = position.x * this.canvasWidth - position.x * this.dirtSize;
+    const y = position.y * this.canvasHeight - position.y * this.dirtSize;
+    this.canvasCtx.drawImage(this.dirtImage, x, y, this.dirtSize, this.dirtSize);
     // this.canvasCtx.fillStyle = 'rgba(255, 0, 0, 0.5)';
     // this.canvasCtx.fillRect(x, y, DIRT_SIZE, DIRT_SIZE);
   };
@@ -107,15 +109,15 @@ export class ImageModel {
   ): boolean => {
     if (!this.ragPosition) return false;
     const dirtX =
-      dirtPosition.x * this.canvasWidth - dirtPosition.x * DIRT_SIZE;
+      dirtPosition.x * this.canvasWidth - dirtPosition.x * this.dirtSize;
     const dirtY =
-      dirtPosition.y * this.canvasHeight - dirtPosition.y * DIRT_SIZE;
+      dirtPosition.y * this.canvasHeight - dirtPosition.y * this.dirtSize;
 
     return (
       this.ragPosition.x >= dirtX &&
-      this.ragPosition.x <= dirtX + DIRT_SIZE &&
+      this.ragPosition.x <= dirtX + this.dirtSize &&
       this.ragPosition.y >= dirtY &&
-      this.ragPosition.y <= dirtY + DIRT_SIZE
+      this.ragPosition.y <= dirtY + this.dirtSize
     );
   };
 }

@@ -1,4 +1,4 @@
-import { HandLandmarkerResult } from '@mediapipe/tasks-vision';
+import { HandLandmarkerResult, Landmark } from '@mediapipe/tasks-vision';
 
 export const detectRockGesture = (landmarks: HandLandmarkerResult) => {
     const worldLandmarks = landmarks.worldLandmarks[0];
@@ -53,9 +53,8 @@ export const detectRockGesture = (landmarks: HandLandmarkerResult) => {
     return isFingerClose && isFingerOpen;
   };
   
-  export const detectPaperGesture = (landmarks: HandLandmarkerResult) => {
-    const worldLandmarks = landmarks.worldLandmarks[0];
-    if (!worldLandmarks) {
+  export const detectPaperGesture = (worldLandmarks: Landmark[]) => {
+    if (!worldLandmarks || worldLandmarks.length === 0) {
       return false;
     }
     const palmCenter = worldLandmarks[0];

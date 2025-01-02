@@ -50,7 +50,7 @@ export default function Home() {
 
   return (
     <div className={`flex flex-col items-center justify-center min-h-screen p-8 pb-20 gap-16 sm:p-20 bg-[url('/images/nightRoom.png')] bg-cover bg-center`}>
-      {isGameStarted && <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50" />}
+      {isGameStarted && <div className="absolute top-0 left-0 w-full h-full bg-black" />}
         {isGameStarted ? (
           <div className="absolute top-0 left-0 z-30 p-5  font-bold bg-black/[.6] rounded-md">
             <p>Use your hand 👋 to wipe the dust off the screen.</p>
