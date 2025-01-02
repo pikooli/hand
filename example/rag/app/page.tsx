@@ -28,7 +28,6 @@ export default function Home() {
   useGuiDisplay({ guiRef , isDebug});
 
   const getUserMedia = useCallback(() => {
-    setIsGameStarted(true);
     try {
       mediapipeRef.current?.initUserMedia(() => {
         helperRef.current?.resizeCanvas(
@@ -42,6 +41,7 @@ export default function Home() {
         mediapipeRef.current?.onMessage(setLandmarks);
         musicRef.current!.volume = guiRef.current.volume;
         musicRef.current?.play();
+        setIsGameStarted(true);
       });
     } catch (err) {
       console.error('Error accessing webcam:', err);
