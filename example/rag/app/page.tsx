@@ -10,6 +10,7 @@ import { GameComponent } from '@/components/game/GameComponent';
 import { useGuiDisplay, guiObject } from '@/components/useGuiDisplay';
 import { GameDescription } from '@/components/GameDescription';
 import { DisplayElement } from '@/components/DisplayText';
+import { Footer } from '@/components/Footer';
 
 const MUSIC_BACKGROUND = '/sounds/Midnight Echoes.mp3';
 
@@ -139,6 +140,7 @@ export default function Home() {
       {shouldShowDisplay && (
         <DisplayElement text={`🌟 Level ${level + 1} 🌟`} />
       )}
+      <Footer />
     </div>
   );
 }
