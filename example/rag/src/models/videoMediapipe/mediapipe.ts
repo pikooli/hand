@@ -59,6 +59,7 @@ export class MediapipeModel {
       this.isInitialized = true;
     } catch (err) {
       console.error('Error accessing webcam:', err);
+      throw new Error('Error accessing webcam');
     }
   };
 

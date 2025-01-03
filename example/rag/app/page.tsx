@@ -29,6 +29,7 @@ const GameDisplay = ({
   score,
   onClick,
   loading,
+  error,
 }: GameDisplayProps) => {
   if (isGameStarted) {
     return (
@@ -40,6 +41,15 @@ const GameDisplay = ({
           <p>🏆 Score: {score}</p>
         </div>
       </>
+    );
+  }
+  if (error) {
+    return (
+      <div className="absolute top-1/2 z-30">
+        <h1 className="text-2xl font-bold bg-gray-800 p-4 rounded-md">
+          Error : {error}
+        </h1>
+      </div>
     );
   }
   if (loading) {
@@ -71,13 +81,14 @@ export default function Home() {
   const [level, setLevel] = useState(0);
   const [shouldShowDisplay, setShouldShowDisplay] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useGuiDisplay({ guiRef, isDebug });
 
   const getUserMedia = useCallback(() => {
     setLoading(true);
-    try {
-      mediapipeRef.current?.initUserMedia(() => {
+    mediapipeRef.current
+      ?.initUserMedia(() => {
         helperRef.current?.resizeCanvas(
           videoRef.current?.offsetWidth || 0,
           videoRef.current?.offsetHeight || 0
@@ -91,10 +102,11 @@ export default function Home() {
         musicRef.current?.play();
         setIsGameStarted(true);
         setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Error accessing webcam:', err);
+        setError('Error accessing webcam, please enable camera');
       });
-    } catch (err) {
-      console.error('Error accessing webcam:', err);
-    }
   }, []);
 
   useEffect(() => {
@@ -116,6 +128,7 @@ export default function Home() {
         score={score}
         onClick={getUserMedia}
         loading={loading}
+        error={error}
       />
       <div className="transform -scale-x-100">
         <VideoMediapipe mediapipeRef={mediapipeRef} videoRef={videoRef} />
