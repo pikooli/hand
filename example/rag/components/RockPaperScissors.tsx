@@ -17,7 +17,7 @@ export const RockPaperScissors = ({landmarks}: RockPaperScissorsProps) => {
             setGesture("👊");
           } else if (detectScissorGesture(landmarks)) {
             setGesture("✌️");
-          } else if (detectPaperGesture(landmarks)) {
+          } else if (detectPaperGesture(landmarks.landmarks[0])) {
             setGesture("👋");
           } else {
             setGesture("🤔");

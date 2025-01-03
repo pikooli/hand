@@ -7,9 +7,10 @@ const runningMode = 'VIDEO';
 // const runningMode = 'IMAGE';
 
 (async () => {
-  console.log('loading handLandmarker');
-  const vision = await FilesetResolver.forVisionTasks(
-    'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm'
+  try {
+    console.log('loading handLandmarker');
+    const vision = await FilesetResolver.forVisionTasks(
+      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm'
   );
   console.log('vision loaded');
   handLandmarker = await HandLandmarker.createFromOptions(vision, {
@@ -22,6 +23,10 @@ const runningMode = 'VIDEO';
   });
   console.log('handLandmarker loaded', handLandmarker);
   self.postMessage({ type: MESSAGE_TYPE.STATUS, results: 'ready' });
+  } catch (error) {
+    console.error('Error loading handLandmarker:', error);
+    self.postMessage({ type: MESSAGE_TYPE.STATUS, results: 'A error happen on initializing handLandmarker' });
+  }
 })();
 
 self.onmessage = async (event) => {

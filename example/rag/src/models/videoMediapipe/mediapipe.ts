@@ -14,7 +14,15 @@ export class MediapipeModel {
     this.worker = new Worker(new URL('./workerMediapipe.ts', import.meta.url), {
       type: 'module',
     });
-    console.log('====== mediapipeModel loaded');
+    this.worker.onmessage = (event) => {
+      if (event.data.type === MESSAGE_TYPE.STATUS) {
+        if (event.data.results === 'ready') {
+        }
+        else {
+          throw new Error(event.data.results);
+        }
+      }
+    };
   }
 
   onMessage = (updateResults: (results: HandLandmarkerResult) => void) =>{

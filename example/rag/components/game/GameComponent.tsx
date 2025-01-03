@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { HandLandmarkerResult } from '@mediapipe/tasks-vision';
 import { ImageModel } from '@/src/models/imageModel';
 import { detectPaperGesture } from '@/src/gesture/rockPaperScissors';
