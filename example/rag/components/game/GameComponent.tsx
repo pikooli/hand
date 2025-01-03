@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { HandLandmarkerResult } from '@mediapipe/tasks-vision';
 import { ImageModel } from '@/src/models/imageModel';
 import { detectPaperGesture } from '@/src/gesture/rockPaperScissors';
@@ -43,6 +43,7 @@ export const GameComponent = ({
   const canvasGameRef = useRef<HTMLCanvasElement>(null);
   const [dirtPositions, setDirtPositions] = useState<Position[]>([]);
   const [speed, setSpeed] = useState<number>(LEVEL_CONFIG[0].speed);
+  const [removeDirtIndex, setRemoveDirtIndex] = useState<number[]>([]);
 
   useEffect(() => {
     imageRef.current = new ImageModel(
@@ -75,18 +76,25 @@ export const GameComponent = ({
   const ragLogic = useCallback(
     (landmarks: HandLandmarkerResult, index: number) => {
       imageRef.current?.drawRag(landmarks.landmarks[index]);
+      const dirtIdexToRemove: number[] = [];
       dirtPositions.forEach((position, index) => {
         if (imageRef.current?.isRagOverDirt(position)) {
-          setDirtPositions((prev) => {
-            return [...prev.slice(0, index), ...prev.slice(index + 1)];
-          });
+          dirtIdexToRemove.push(index);
           playSound(SOUND_WIPE);
           setScore((prev) => prev + 1);
         }
       });
+      setRemoveDirtIndex(dirtIdexToRemove);
     },
     [imageRef, dirtPositions, setScore]
   );
+  useEffect(() => {
+    if (removeDirtIndex.length > 0) {
+      setDirtPositions((prev) => {
+        return prev.filter((_, index) => !removeDirtIndex.includes(index));
+      });
+    }
+  }, [removeDirtIndex]);
 
   useEffect(() => {
     if (!isGameStarted) return;

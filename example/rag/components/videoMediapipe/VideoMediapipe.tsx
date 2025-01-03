@@ -25,7 +25,7 @@ export const VideoMediapipe = ({
       ref={videoRef}
       autoPlay
       playsInline
-      className="w-full h-full"
+      className="h-screen"
     />
   );
 };

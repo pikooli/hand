@@ -101,7 +101,7 @@ export class ImageModel {
     const y = position.y * this.canvasHeight - position.y * this.dirtSize;
     this.canvasCtx.drawImage(this.dirtImage, x, y, this.dirtSize, this.dirtSize);
     // this.canvasCtx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-    // this.canvasCtx.fillRect(x, y, DIRT_SIZE, DIRT_SIZE);
+    // this.canvasCtx.fillRect(x, y, this.dirtSize, this.dirtSize);
   };
 
   isRagOverDirt = (

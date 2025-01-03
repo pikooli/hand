@@ -3,33 +3,30 @@ interface GameDescriptionProps {
 }
 
 const description = [
-  "WipeIt is a game where you have to clean by wiping the dust off the screen.",
-  "You need to enable the camera of your computer💻",
-  "You can use your hand 👋 to wipe the dust off the screen.",
-]
+  'Welcome to WipeIt - an interactive cleaning game! 🎮',
+  'Your mission is to keep your screen spotless by wiping away dirt as it appears.',
+  "To play, you'll need to enable your computer's camera 📸",
+  'Make a paper/open hand gesture ✋ to control your virtual cleaning rag',
+  'Progress through levels by cleaning quickly and efficiently! 🏆',
+  'Are you ready to become the ultimate cleaning champion? 💪',
+];
 
 export const GameDescription = ({ onClick }: GameDescriptionProps) => {
   return (
     <div className="flex flex-col items-center justify-center gap-8">
-      <h1 className="text-2xl font-bold">
-      <span className="bg-black/[.6] rounded-md px-2 py-1">
-        Welcome to the game WipeIt
-      </span>
-      </h1>
-      <div>
+      <h1 className="text-4xl font-bold bg-gray-800 p-4 rounded-md">WipeIt</h1>
+      <div className="flex flex-col bg-gray-800 rounded-md p-4">
         {description.map((desc, index) => (
           <p key={index} className="text-center text-lg">
-            <span className="bg-black/[.6] rounded-md px-2 py-1">
             {desc}
-            </span>
           </p>
         ))}
       </div>
       <button
-        className="bg-blue-500 text-white px-4 py-2 rounded-md capitalize"
+        className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-lg text-xl font-bold transition-colors"
         onClick={onClick}
       >
-        start the game
+        Start Game
       </button>
     </div>
   );
