@@ -22,7 +22,9 @@ interface GameDisplayProps {
   score: number;
   onClick: () => void;
   loading: boolean;
+  error: string;
 }
+
 const GameDisplay = ({
   isGameStarted,
   level,
